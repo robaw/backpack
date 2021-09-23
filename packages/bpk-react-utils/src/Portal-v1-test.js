@@ -21,27 +21,27 @@ import { mount } from 'enzyme';
 import { render } from '@testing-library/react';
 import { render as reactDomRender, unmountComponentAtNode } from 'react-dom';
 
-import Portal from './Portal';
+import PortalV1 from './Portal-v1';
 
 const KEYCODES = {
-  ESCAPE: 'Escape',
+  ESCAPE: 27,
 };
 
 describe('Portal', () => {
   it('should render correctly with no target', () => {
     const { asFragment } = render(
-      <Portal isOpen={false}>
+      <PortalV1 isOpen={false}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('should render correctly with target', () => {
     const { asFragment } = render(
-      <Portal isOpen={false} target={<div>Target</div>}>
+      <PortalV1 isOpen={false} target={<div>Target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -50,9 +50,9 @@ describe('Portal', () => {
   it('should render correctly with renderTarget', () => {
     const div = document.createElement('div');
     const { asFragment } = render(
-      <Portal isOpen renderTarget={() => div}>
+      <PortalV1 isOpen renderTarget={() => div}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -63,9 +63,9 @@ describe('Portal', () => {
     const customStyle = { color: 'red' }; // eslint-disable-line backpack/use-tokens
 
     const portal = mount(
-      <Portal isOpen style={customStyle}>
+      <PortalV1 isOpen style={customStyle}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(portal.instance().portalElement.style.color).toEqual(
@@ -77,9 +77,9 @@ describe('Portal', () => {
     const customClassname = 'my-custom-classname';
 
     const portal = mount(
-      <Portal isOpen className={customClassname}>
+      <PortalV1 isOpen className={customClassname}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(
@@ -89,9 +89,9 @@ describe('Portal', () => {
 
   it('should render portal children to document.body', () => {
     mount(
-      <Portal isOpen>
+      <PortalV1 isOpen>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(document.body.lastChild.textContent).toEqual('My portal content');
@@ -105,9 +105,9 @@ describe('Portal', () => {
     expect(document.body.lastChild.textContent).toEqual('Not a portal');
 
     const portal = mount(
-      <Portal isOpen>
+      <PortalV1 isOpen>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(document.body.lastChild.textContent).toEqual('My portal content');
@@ -123,12 +123,12 @@ describe('Portal', () => {
     document.body.appendChild(div);
 
     const portal = mount(
-      <Portal
+      <PortalV1
         isOpen
         renderTarget={() => document.getElementById('render-target')}
       >
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(document.body.lastChild.textContent).toEqual('My portal content');
@@ -144,9 +144,9 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     const portal = mount(
-      <Portal isOpen onClose={onCloseSpy} target={<div>target</div>}>
+      <PortalV1 isOpen onClose={onCloseSpy} target={<div>target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
@@ -192,9 +192,9 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     const portal = mount(
-      <Portal isOpen onClose={onCloseSpy} target={<div>target</div>}>
+      <PortalV1 isOpen onClose={onCloseSpy} target={<div>target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
@@ -216,15 +216,15 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     reactDomRender(
-      <Portal isOpen onClose={onCloseSpy} target={<div>target</div>}>
+      <PortalV1 isOpen onClose={onCloseSpy} target={<div>target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
       mountPoint,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
 
-    const event = new KeyboardEvent('keydown', { key: KEYCODES.ESCAPE });
+    const event = new KeyboardEvent('keydown', { keyCode: KEYCODES.ESCAPE });
     document.dispatchEvent(event);
 
     expect(onCloseSpy.mock.calls.length).toEqual(1);
@@ -237,20 +237,20 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     reactDomRender(
-      <Portal
+      <PortalV1
         isOpen
         onClose={onCloseSpy}
         target={<div>target</div>}
         closeOnEscPressed={false}
       >
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
       mountPoint,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
 
-    const event = new KeyboardEvent('keydown', { key: KEYCODES.ESCAPE });
+    const event = new KeyboardEvent('keydown', { keyCode: KEYCODES.ESCAPE });
     document.dispatchEvent(event);
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
@@ -263,15 +263,15 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     reactDomRender(
-      <Portal isOpen onClose={onCloseSpy} target={<div>target</div>}>
+      <PortalV1 isOpen onClose={onCloseSpy} target={<div>target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
       mountPoint,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
 
-    const event = new KeyboardEvent('keydown', { key: KEYCODES.ESCAPE });
+    const event = new KeyboardEvent('keydown', { keyCode: KEYCODES.ESCAPE });
     document.dispatchEvent(event);
 
     expect(onCloseSpy.mock.calls[0][0]).toEqual(event);
@@ -285,15 +285,15 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     reactDomRender(
-      <Portal isOpen={false} onClose={onCloseSpy} target={<div>target</div>}>
+      <PortalV1 isOpen={false} onClose={onCloseSpy} target={<div>target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
       mountPoint,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
 
-    const event = new KeyboardEvent('keydown', { key: KEYCODES.ESCAPE });
+    const event = new KeyboardEvent('keydown', { keyCode: KEYCODES.ESCAPE });
     document.dispatchEvent(event);
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
@@ -306,15 +306,15 @@ describe('Portal', () => {
     const onCloseSpy = jest.fn();
 
     reactDomRender(
-      <Portal isOpen onClose={onCloseSpy} target={<div>target</div>}>
+      <PortalV1 isOpen onClose={onCloseSpy} target={<div>target</div>}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
       mountPoint,
     );
 
     expect(onCloseSpy.mock.calls.length).toEqual(0);
 
-    const event = new KeyboardEvent('keydown', { key: KEYCODES.ESCAPE });
+    const event = new KeyboardEvent('keydown', { keyCode: KEYCODES.ESCAPE });
     document.dispatchEvent(event);
 
     expect(onCloseSpy.mock.calls.length).toEqual(1);
@@ -330,9 +330,9 @@ describe('Portal', () => {
     const onRenderSpy = jest.fn();
 
     const portal = mount(
-      <Portal isOpen onRender={onRenderSpy}>
+      <PortalV1 isOpen onRender={onRenderSpy}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(onRenderSpy.mock.calls.length).toBe(1);
@@ -348,7 +348,7 @@ describe('Portal', () => {
     let order = 0;
 
     const portal = mount(
-      <Portal
+      <PortalV1
         isOpen={false}
         onRender={() => {
           order = 1;
@@ -358,7 +358,7 @@ describe('Portal', () => {
         }}
       >
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     portal.setProps({ isOpen: true }).update();
@@ -369,7 +369,7 @@ describe('Portal', () => {
     let order = 0;
 
     mount(
-      <Portal
+      <PortalV1
         isOpen
         onRender={() => {
           order = 1;
@@ -379,7 +379,7 @@ describe('Portal', () => {
         }}
       >
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(order).toBe(2);
@@ -389,9 +389,9 @@ describe('Portal', () => {
     const onRenderSpy = jest.fn();
 
     const portal = mount(
-      <Portal isOpen={false} onRender={onRenderSpy}>
+      <PortalV1 isOpen={false} onRender={onRenderSpy}>
         <div>My portal content</div>
-      </Portal>,
+      </PortalV1>,
     );
 
     expect(onRenderSpy.mock.calls.length).toBe(0);
@@ -410,13 +410,13 @@ describe('Portal', () => {
     const beforeCloseSpy = jest.fn();
 
     beforeAll(() => {
-      Portal.prototype.open = openSpy;
-      Portal.prototype.close = closeSpy;
+      PortalV1.prototype.open = openSpy;
+      PortalV1.prototype.close = closeSpy;
 
       portal = mount(
-        <Portal isOpen>
+        <PortalV1 isOpen>
           <div>My portal content</div>
-        </Portal>,
+        </PortalV1>,
       );
     });
 

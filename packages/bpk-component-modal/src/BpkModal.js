@@ -19,7 +19,8 @@
 /* @flow strict */
 
 import PropTypes from 'prop-types';
-import React, { type Element } from 'react';
+import React, { Component, type Element } from 'react';
+import { createPortal } from 'react-dom';
 import { withScrim } from 'bpk-scrim-utils';
 import { Portal, cssModules, isDeviceIphone } from 'bpk-react-utils';
 
@@ -53,6 +54,64 @@ export type Props = {
   onClose: (event: SyntheticEvent<>) => void | null,
 };
 
+class Modal extends Component {
+  constructor(props) {
+    super(props);
+    this.el = document.createElement('div');
+  }
+
+  componentDidMount() {
+    // The portal element is inserted in the DOM tree after
+    // the Modal's children are mounted, meaning that children
+    // will be mounted on a detached DOM node. If a child
+    // component requires to be attached to the DOM tree
+    // immediately when mounted, for example to measure a
+    // DOM node, or uses 'autoFocus' in a descendant, add
+    // state to Modal and only render the children when Modal
+    // is inserted in the DOM tree.
+    if (this.props.isOpen) {
+      this.getRenderTarget().appendChild(this.el);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isOpen) {
+      if (!prevProps.isOpen) {
+        this.getRenderTarget().appendChild(this.el);
+      } else {
+        this.props.onRender(this.portalElement, this.getTargetElement());
+      }
+    } else if (prevProps.isOpen) {
+      if (this.props.beforeClose) {
+        this.props.beforeClose(this.close);
+      } else {
+        this.getRenderTarget().removeChild(this.el);
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.getRenderTarget().removeChild(this.el);
+  }
+
+  getRenderTarget() {
+    const target =
+      typeof this.props.renderTarget === 'function'
+        ? this.props.renderTarget()
+        : this.props.renderTarget;
+
+    if (target) {
+      return target;
+    }
+
+    return document.body;
+  }
+
+  render() {
+    return createPortal(this.props.children, this.el);
+  }
+}
+
 const BpkModal = (props: Props) => {
   const {
     isOpen,
@@ -78,7 +137,7 @@ const BpkModal = (props: Props) => {
   }
 
   return (
-    <Portal
+    <Modal
       isOpen={isOpen}
       onClose={onClose}
       target={target}
@@ -95,7 +154,7 @@ const BpkModal = (props: Props) => {
         isIphone={isIphone}
         {...rest}
       />
-    </Portal>
+    </Modal>
   );
 };
 
