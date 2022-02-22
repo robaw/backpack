@@ -1,13 +1,19 @@
 {
   "version": "independent",
-  "packages": ["packages/*"],
+  "packages": [
+    "packages/*"
+  ],
   "command": {
     "bootstrap": {
-      "ignore": ["bpk-tether"]
+      "ignore": [
+        "bpk-tether"
+      ]
     },
     "publish": {
-      "ignoreChanges": ["bpk-tether", "package-lock.json"],
-      "allowBranch": "main"
+      "ignoreChanges": [
+        "bpk-tether",
+        "package-lock.json"
+      ]
     }
   }
 }
